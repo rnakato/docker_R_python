@@ -1,0 +1,94 @@
+FROM rnakato/ubuntu:18.04
+LABEL maintainer "Ryuichiro Nakato <rnakato@iam.u-tokyo.ac.jp>"
+
+USER root
+WORKDIR /opt
+
+ENV PATH /opt/conda/bin:${PATH}:/opt
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    apt-file \
+    apt-utils \
+    build-essential \
+    bzip2 \
+    ca-certificates \
+    cmake \
+    curl \
+    emacs \
+    eog \
+    evince \
+    gawk \
+    gedit \
+    gfortran \
+    git \
+    gnupg \
+    htop \
+    imagemagick \
+    libatlas-base-dev \
+    libblas-dev \
+    libboost-all-dev \
+    libbz2-dev \
+    libcurl4-openssl-dev \
+    libfreetype6-dev \
+    libgdal-dev \
+    libglu1-mesa-dev \
+    libgsl-dev \
+    libhdf5-dev \
+    libhdf5-serial-dev \
+    liblapack3 \
+    liblapack-dev \
+    libssl-dev \
+    libudunits2-dev \
+    libx11-dev \
+    make \
+    openjdk-8-jdk-headless \
+    openjdk-8-jre \
+    pigz \
+    unzip \
+    vim \
+    xorg \
+    zlib1g-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# R 3.5
+RUN echo "deb https://cran.rstudio.com/bin/linux/ubuntu bionic-cran35/" | tee -a /etc/apt/sources.list \
+    && curl -sL "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x51716619E084DAB9" | apt-key add \
+    && apt update \
+    && apt install -y r-base r-base-core r-recommended r-base-dev libclang-dev libxkbcommon-x11-0 \
+    && apt upgrade -y \
+    && apt autoremove -y \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Anaconda3 (2020.02)
+RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh -O ~/anaconda.sh \
+     && bash ~/anaconda.sh -b -p /opt/conda \
+     && rm ~/anaconda.sh \
+     && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
+
+# Python
+RUN conda update -y conda \
+    && pip install -U pip \
+    && conda config --add channels conda-forge
+RUN conda install numpy numpy_groupies scipy matplotlib pandas seaborn scikit-learn notebook dask plotly black bokeh h5py click jupyter jupyterlab \
+    && pip install -U jupyterthemes jupyter_contrib_nbextensions python-igraph umap-learn
+
+RUN ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial.so.100 /usr/lib/x86_64-linux-gnu/libhdf5.so.100 \
+    && ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial_hl.so.100 /usr/lib/x86_64-linux-gnu/libhdf5_hl.so.100
+
+# R packages
+RUN R CMD javareconf \
+    && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'devtools','BiocManager','sf','tidyverse','xlsx','hdf5r','igraph'))" \
+    && R -e "devtools::install_github('IRkernel/IRkernel')" \
+    && R -e "IRkernel::installspec()" \
+    && R -e "BiocManager::install(c('multtest','rhdf5'))"
+
+ENV LD_LIBRARY_PATH /opt/conda/lib/:$LD_LIBRARY_PATH
+
+ADD conf conf
+RUN jupyter notebook --generate-config \
+    && cat ./conf >> /root/.jupyter/jupyter_notebook_config.py \
+    && rm ./conf
+COPY jupyternotebook.sh jupyternotebook.sh
