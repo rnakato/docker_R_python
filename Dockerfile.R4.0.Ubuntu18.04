@@ -84,7 +84,9 @@ RUN R CMD javareconf \
     && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'devtools','BiocManager','sf','tidyverse','xlsx','hdf5r','igraph'))" \
     && R -e "BiocManager::install(c('multtest','rhdf5'))"
 
+#ENV JUPYTER_CONFIG_DIR /opt/conda/.jupyter
 ADD conf conf
+
 RUN jupyter notebook --generate-config \
     && cat ./conf >> /root/.jupyter/jupyter_notebook_config.py \
     && rm ./conf
