@@ -94,3 +94,4 @@ RUN R -e "devtools::install_github('IRkernel/IRkernel')" \
     && R -e "IRkernel::installspec(user = FALSE)"
 
 COPY jupyternotebook.sh jupyternotebook.sh
+#RUN chmod -R 777 $JUPYTER_CONFIG_DIR
