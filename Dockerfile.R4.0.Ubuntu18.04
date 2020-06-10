@@ -5,7 +5,6 @@ USER root
 WORKDIR /opt
 
 ENV PATH /opt/conda/bin:${PATH}:/opt
-ENV LD_LIBRARY_PATH /opt/conda/lib/:$LD_LIBRARY_PATH
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -20,6 +19,7 @@ RUN apt-get update \
     eog \
     evince \
     gawk \
+    gdebi-core \
     gedit \
     gfortran \
     git \
@@ -46,6 +46,8 @@ RUN apt-get update \
     openjdk-8-jdk-headless \
     openjdk-8-jre \
     pigz \
+    psmisc \
+    sudo \
     unzip \
     vim \
     xorg \
@@ -63,6 +65,24 @@ RUN echo "deb https://cran.rstudio.com/bin/linux/ubuntu bionic-cran40/" | tee -a
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial.so.100 /usr/lib/x86_64-linux-gnu/libhdf5.so.100 \
+    && ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial_hl.so.100 /usr/lib/x86_64-linux-gnu/libhdf5_hl.so.100
+
+# R packages
+RUN R CMD javareconf \
+    && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'devtools','BiocManager','sf','tidyverse','xlsx','hdf5r','igraph'))" \
+    && R -e "BiocManager::install(c('multtest','rhdf5'))"
+
+# Rstudio server
+RUN wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.3.959-amd64.deb \
+    && dpkg -i rstudio-server-1.3.959-amd64.deb \
+    && rm rstudio-server-1.3.959-amd64.deb
+
+# Rstudio
+RUN curl -LO https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.3.959-amd64.deb \
+    && gdebi -n rstudio-1.3.959-amd64.deb \
+    && rm rstudio-1.3.959-amd64.deb
+
 # Anaconda3 (2020.02)
 RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh -O ~/anaconda.sh \
      && bash ~/anaconda.sh -b -p /opt/conda \
@@ -74,18 +94,14 @@ RUN conda update -y conda \
     && pip install -U pip \
     && conda config --add channels conda-forge
 RUN conda install numpy numpy_groupies scipy matplotlib pandas seaborn scikit-learn notebook dask plotly black bokeh h5py click jupyter jupyterlab numba pytables \
-    && pip install -U jupyterthemes jupyter_contrib_nbextensions python-igraph umap-learn
+    && pip install -U jupyterthemes jupyter_contrib_nbextensions python-igraph umap-learn numba
 
-RUN ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial.so.100 /usr/lib/x86_64-linux-gnu/libhdf5.so.100 \
-    && ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial_hl.so.100 /usr/lib/x86_64-linux-gnu/libhdf5_hl.so.100
+#ENV LD_LIBRARY_PATH /opt/conda/lib/:$LD_LIBRARY_PATH
 
-# R packages
-RUN R CMD javareconf \
-    && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'devtools','BiocManager','sf','tidyverse','xlsx','hdf5r','igraph'))" \
-    && R -e "BiocManager::install(c('multtest','rhdf5'))"
-
-#ENV JUPYTER_CONFIG_DIR /opt/conda/.jupyter
 ADD conf conf
+
+RUN useradd -s /bin/bash -m rstudio \
+    && echo "rstudio:rstudio" | chpasswd
 
 RUN jupyter notebook --generate-config \
     && cat ./conf >> /root/.jupyter/jupyter_notebook_config.py \
@@ -94,4 +110,4 @@ RUN R -e "devtools::install_github('IRkernel/IRkernel')" \
     && R -e "IRkernel::installspec(user = FALSE)"
 
 COPY jupyternotebook.sh jupyternotebook.sh
-#RUN chmod -R 777 $JUPYTER_CONFIG_DIR
+COPY rserver.sh rserver.sh
