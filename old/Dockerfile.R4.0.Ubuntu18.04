@@ -1,5 +1,5 @@
 FROM rnakato/ubuntu:18.04
-LABEL maintainer "Ryuichiro Nakato <rnakato@iam.u-tokyo.ac.jp>"
+LABEL maintainer "Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
 WORKDIR /opt
@@ -73,18 +73,13 @@ RUN R CMD javareconf \
     && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'devtools','BiocManager','sf','tidyverse','xlsx','hdf5r','igraph'))" \
     && R -e "BiocManager::install(c('multtest','rhdf5'))"
 
-# Rstudio server
-RUN wget https://download2.rstudio.org/server/bionic/amd64/rstudio-server-1.3.959-amd64.deb \
-    && dpkg -i rstudio-server-1.3.959-amd64.deb \
-    && rm rstudio-server-1.3.959-amd64.deb
-
 # Rstudio
 RUN curl -LO https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.3.959-amd64.deb \
     && gdebi -n rstudio-1.3.959-amd64.deb \
     && rm rstudio-1.3.959-amd64.deb
 
-# Anaconda3 (2020.02)
-RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2020.02-Linux-x86_64.sh -O ~/anaconda.sh \
+# Anaconda3
+RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh -O ~/anaconda.sh \
      && bash ~/anaconda.sh -b -p /opt/conda \
      && rm ~/anaconda.sh \
      && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
@@ -95,8 +90,6 @@ RUN conda update -y conda \
     && conda config --add channels conda-forge
 RUN conda install numpy numpy_groupies scipy matplotlib pandas seaborn scikit-learn notebook dask plotly black bokeh h5py click jupyter jupyterlab numba pytables \
     && pip install -U jupyterthemes jupyter_contrib_nbextensions python-igraph umap-learn numba
-
-#ENV LD_LIBRARY_PATH /opt/conda/lib/:$LD_LIBRARY_PATH
 
 ADD conf conf
 
