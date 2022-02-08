@@ -1,4 +1,5 @@
-FROM rnakato/ubuntu_gpu:pytorch-1.5-cuda10.1-cudnn7-devel
+#FROM rnakato/ubuntu_gpu:pytorch-1.5-cuda10.1-cudnn7-devel
+FROM rnakato/ubuntu_gpu:pytorch-1.10.0-cuda11.3-cudnn8-devel
 LABEL maintainer "Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
@@ -49,6 +50,7 @@ RUN apt-get update \
     openjdk-8-jre \
     pigz \
     psmisc \
+    qtbase5-dev qttools5-dev-tools qt5-default \
     samtools \
     sudo \
     unzip \
@@ -73,18 +75,18 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial.so.100 /usr/lib/x86_64-linux-
     && ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial_hl.so.100 /usr/lib/x86_64-linux-gnu/libhdf5_hl.so.100
 
 # R packages
-RUN R -e "install.packages(c('BiocManager'))" \
-    R -e "BiocManager::install(version = '3.12', ask = FALSE)"
+RUN R -e "install.packages(c('BiocManager'))"
+#    R -e "BiocManager::install(version = '3.12', ask = FALSE)"
 RUN R CMD javareconf
 RUN R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'devtools','sf','tidyverse','xlsx','hdf5r','igraph','usethis'))" \
     && R -e "BiocManager::install(c('multtest','rhdf5'))"
 
 # Rstudio
-RUN curl -LO https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.3.959-amd64.deb \
-    && gdebi -n rstudio-1.3.959-amd64.deb \
-    && rm rstudio-1.3.959-amd64.deb
+RUN curl -LO https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.4.1106-amd64.deb \
+    && gdebi -n rstudio-1.4.1106-amd64.deb \
+    && rm rstudio-1.4.1106-amd64.deb
 
-RUN R -e "install.packages(c('keras', 'tensorflow'), repos='https://cran.ism.ac.jp/')"
+#RUN R -e "install.packages(c('keras', 'tensorflow'), repos='https://cran.ism.ac.jp/')"
 #RUN R -e "reticulate::py_config()"
 #RUN echo "Sys.setenv(RETICULATE_PYTHON = '/opt/conda/bin/python3')" > $HOME/.Rprofile
 #RUN R -e "tensorflow::install_tensorflow()"
@@ -106,6 +108,8 @@ RUN jupyter notebook --generate-config \
     && rm ./conf
 RUN R -e "devtools::install_github('IRkernel/IRkernel')" \
     && R -e "IRkernel::installspec(user = FALSE)"
+
+#ENV XDG_RUNTIME_DIR /opt/
 
 COPY jupyternotebook.sh jupyternotebook.sh
 COPY rserver.sh rserver.sh
