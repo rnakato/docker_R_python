@@ -94,7 +94,7 @@ RUN conda install numpy scipy matplotlib pandas seaborn scikit-learn scikit-lear
                   click jupyter jupyterlab pytables setuptools sphinx sphinx_rtd_theme fastcluster numba Cython
 # conda-forge
 RUN conda install -c conda-forge sphinx-autobuild nbsphinx python-igraph jupyterthemes jupyter_contrib_nbextensions umap-learn
-RUN pip install sphinxcontrib-excel-table
+RUN pip install sphinxcontrib.exceltable
 
 ADD conf conf
 
