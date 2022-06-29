@@ -101,9 +101,9 @@ RUN conda install numpy scipy matplotlib pandas seaborn scikit-learn scikit-lear
 #COPY MACS2-2.2.6.tar.gz MACS2-2.2.6.tar.gz
 RUN wget https://mirrors.huaweicloud.com/repository/pypi/packages/21/0f/972b44c84d85e37d816beae88aa5ddad606bd757630d77dc2f558900a6ce/MACS2-2.2.6.tar.gz \
     && tar zxvf MACS2-2.2.6.tar.gz \
-    && cd MACS-2.2.6 \
+    && cd MACS2-2.2.6 \
     && python setup.py install \
-    && rm -rf /work/MACS-2.2.6 /work/MACS2-2.2.6.tar.gz
+    && rm -rf /opt/MACS2-2.2.6 /opt/MACS2-2.2.6.tar.gz
 
 COPY conf conf
 
