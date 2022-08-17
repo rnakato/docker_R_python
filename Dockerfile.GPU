@@ -1,9 +1,11 @@
-FROM rnakato/ubuntu_gpu:11.3.1-cudnn8-runtime-ubuntu20.04
+#FROM rnakato/ubuntu_gpu:2022.08
+FROM rnakato/ubuntu_gpu:10.0-cudnn7-runtime-ubuntu18.04
 LABEL maintainer "Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
-WORKDIR /work
-ENV PATH ${PATH}:/work
+
+WORKDIR /opt
+ENV PATH /opt/conda/bin/:$PATH:/opt
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -35,11 +37,14 @@ RUN apt-get update \
     libgit2-dev \
     libglu1-mesa-dev \
     libgsl-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
     libhdf5-dev \
     libhdf5-serial-dev \
     liblapack3 \
     liblapack-dev \
     libssl-dev \
+    libtool \
     libudunits2-dev \
     libv8-dev \
     libx11-dev \
@@ -49,7 +54,6 @@ RUN apt-get update \
     pigz \
     psmisc \
     qtbase5-dev qttools5-dev-tools qt5-default \
-    samtools \
     sudo \
     unzip \
     vim \
@@ -76,34 +80,39 @@ RUN ln -s /usr/lib/x86_64-linux-gnu/libhdf5_serial.so.103 /usr/lib/x86_64-linux-
 RUN R -e "install.packages(c('BiocManager'))" \
     && R -e "BiocManager::install(ask = FALSE)"
 RUN R CMD javareconf
-RUN R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'devtools','sf','tidyverse','xlsx','hdf5r','igraph','usethis'))" \
-    && R -e "BiocManager::install(c('multtest','rhdf5'))"
+RUN R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'sf', 'tidyverse', 'xlsx', 'hdf5r', 'igraph', 'usethis'))" \
+    && R -e "BiocManager::install(c('multtest','rhdf5'))" \
+    && R -e "devtools::install_github('IRkernel/IRkernel')"
 
 # Rstudio
 RUN curl -LO https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.4.1106-amd64.deb \
     && gdebi -n rstudio-1.4.1106-amd64.deb \
     && rm rstudio-1.4.1106-amd64.deb
-
-#RUN R -e "install.packages(c('keras', 'tensorflow'), repos='https://cran.ism.ac.jp/')"
-#RUN R -e "reticulate::py_config()"
-#RUN echo "Sys.setenv(RETICULATE_PYTHON = '/opt/conda/bin/python3')" > $HOME/.Rprofile
-#RUN R -e "tensorflow::install_tensorflow()"
-
-# Python
-RUN conda config --add channels conda-forge \
-    && conda install numpy numpy_groupies scipy matplotlib pandas seaborn scikit-learn notebook dash plotly black bokeh h5py click jupyter jupyterlab pytables \
-    && pip install --no-cache-dir -U jupyterthemes jupyter_contrib_nbextensions python-igraph umap-learn numba Cython
-
-COPY conf conf
-
 RUN useradd -s /bin/bash -m rstudio \
     && echo "rstudio:rstudio" | chpasswd
 
+# Python
+RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2022.05-Linux-x86_64.sh -O ~/anaconda.sh \
+    && bash ~/anaconda.sh -b -p /opt/conda \
+    && rm ~/anaconda.sh \
+    && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
+RUN conda install numpy scipy matplotlib pandas seaborn scikit-learn scikit-learn-intelex \
+    notebook dash plotly black bokeh h5py click jupyter jupyterlab pytables setuptools \
+    sphinx sphinx_rtd_theme fastcluster numba Cython \
+    && conda install -c conda-forge sphinx-autobuild nbsphinx python-igraph jupyterthemes jupyter_contrib_nbextensions umap-learn ncurses \
+    && pip install --no-cache-dir sphinxcontrib.exceltable session_info tqdm
+
+# Jupyter config
+COPY conf conf
 RUN jupyter notebook --generate-config \
-    && cat ./conf >> /root/.jupyter/jupyter_notebook_config.py \
+    && cat ./conf >> ~/.jupyter/jupyter_notebook_config.py \
     && rm ./conf
-RUN R -e "devtools::install_github('IRkernel/IRkernel')" \
-    && R -e "IRkernel::installspec(user = FALSE)"
+RUN R -e "IRkernel::installspec(user = FALSE)"
 
 COPY jupyternotebook.sh jupyternotebook.sh
 COPY rserver.sh rserver.sh
+COPY rstudio.sh rstudio.sh
+RUN chmod +x /opt/*sh
+
+USER ubuntu
+CMD ["/bin/bash"]
