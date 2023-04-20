@@ -1,4 +1,4 @@
-FROM rnakato/ubuntu:2023.03 as common
+FROM rnakato/ubuntu:2023.04 as common
 LABEL maintainer "Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
