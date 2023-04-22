@@ -90,7 +90,6 @@ RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_6
      && bash ~/anaconda.sh -b -p /opt/conda \
      && rm ~/anaconda.sh \
      && ln -s -f /opt/conda/bin/python /usr/bin/python
-#     && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
 
 RUN conda install numpy scipy matplotlib pandas seaborn scikit-learn scikit-learn-intelex \
     notebook dash plotly black bokeh h5py click jupyter jupyterlab pytables setuptools \
@@ -105,6 +104,13 @@ RUN wget https://mirrors.huaweicloud.com/repository/pypi/packages/21/0f/972b44c8
     && /opt/conda/bin/python setup.py install \
     && rm -rf /opt/MACS2-2.2.6 /opt/MACS2-2.2.6.tar.gz
 
+# bedtools
+ENV v 2.30.0
+COPY bedtools-$v.tar.gz bedtools-$v.tar.gz
+RUN tar zxvf bedtools-$v.tar.gz \
+    && cd bedtools2 && make \
+    && rm /opt/bedtools-$v.tar.gz
+
 # Jupyter config
 COPY conf conf
 RUN jupyter notebook --generate-config \
@@ -115,17 +121,17 @@ RUN R -e "IRkernel::installspec(user = FALSE)"
 COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
-FROM rnakato/ubuntu:2023.03 as normal
+FROM rnakato/ubuntu:2023.04 as normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
-ENV PATH $PATH:/opt/conda/bin/:/opt/scripts
+ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
 COPY --from=common / /
 USER ubuntu
 CMD ["/bin/bash"]
 
-FROM rnakato/ubuntu_gpu:2023.03 as gpu
+FROM rnakato/ubuntu_gpu:2023.04 as gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
-ENV PATH $PATH:/opt/conda/bin/:/opt/scripts
+ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
 COPY --from=common / /
 USER ubuntu
