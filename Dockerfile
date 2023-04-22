@@ -87,9 +87,9 @@ RUN curl -LO https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.03.
 
 # Python
 RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh -O ~/anaconda.sh \
-     && bash ~/anaconda.sh -b -p /opt/conda \
-     && rm ~/anaconda.sh \
-     && ln -s -f /opt/conda/bin/python /usr/bin/python
+    && bash ~/anaconda.sh -b -p /opt/conda \
+    && rm ~/anaconda.sh \
+    && ln -s -f /opt/conda/bin/python /usr/bin/python
 
 RUN conda install numpy scipy matplotlib pandas seaborn scikit-learn scikit-learn-intelex \
     notebook dash plotly black bokeh h5py click jupyter jupyterlab pytables setuptools \
