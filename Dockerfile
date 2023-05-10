@@ -1,9 +1,9 @@
-FROM rnakato/ubuntu:2023.04 as common
+FROM rnakato/ubuntu_22.04:2023.05 as common
 LABEL maintainer "Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
-
 WORKDIR /opt
+
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts
 
 RUN apt-get update \
@@ -121,7 +121,7 @@ RUN R -e "IRkernel::installspec(user = FALSE)"
 COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
-FROM rnakato/ubuntu:2023.04 as normal
+FROM rnakato/ubuntu_22.04:2023.05 as normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
@@ -129,7 +129,7 @@ COPY --from=common / /
 USER ubuntu
 CMD ["/bin/bash"]
 
-FROM rnakato/ubuntu_gpu:2023.04 as gpu
+FROM rnakato/ubuntu_gpu_22.04:2023.05 as gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
