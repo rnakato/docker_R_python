@@ -3,14 +3,13 @@
 - Ubuntu 22.04
 
 - Perl 5.36.0 (with plenv)
+- Python 3.8 (with Miniconda)
+    - MACS2-2.2.9.1
 
 - R 4.x
     - BiocManager
     - Rstudio Desktop
     - Rstudio Server
-
-- Python (Anaconda3-2022.10)
-    - MACS2-2.2.6
 
 - SAMtools 1.17
 - SRAtoolkit 3.0.2

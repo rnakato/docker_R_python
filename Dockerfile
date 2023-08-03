@@ -1,4 +1,4 @@
-FROM rnakato/ubuntu_22.04:2023.05 as common
+FROM rnakato/ubuntu_22.04:2023.06 as common
 LABEL maintainer "Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
@@ -85,24 +85,26 @@ RUN curl -LO https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.03.
     && useradd -s /bin/bash -m rstudio \
     && echo "rstudio:rstudio" | chpasswd
 
-# Python
-RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh -O ~/anaconda.sh \
-    && bash ~/anaconda.sh -b -p /opt/conda \
-    && rm ~/anaconda.sh \
+# Python 3.8
+#RUN wget --quiet https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh -O ~/anaconda.sh \
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py38_23.5.2-0-Linux-x86_64.sh -O ~/miniconda.sh \
+    && bash ~/miniconda.sh -b -p /opt/conda \
+    && rm ~/miniconda.sh \
     && ln -s -f /opt/conda/bin/python /usr/bin/python
 
-RUN conda install numpy scipy matplotlib pandas seaborn scikit-learn scikit-learn-intelex \
+RUN conda update conda \
+    && conda install -y numpy scipy matplotlib pandas seaborn scikit-learn scikit-learn-intelex \
     notebook dash plotly black bokeh h5py click jupyter jupyterlab pytables setuptools \
-    sphinx sphinx_rtd_theme fastcluster numba Cython \
-    && conda install -c conda-forge sphinx-autobuild nbsphinx python-igraph jupyterthemes jupyter_contrib_nbextensions umap-learn ncurses \
-    && pip install --no-cache-dir sphinxcontrib.exceltable session_info tqdm
+    sphinx sphinx_rtd_theme fastcluster numba \
+    && conda install -y -c conda-forge sphinx-autobuild nbsphinx python-igraph jupyterthemes jupyter_contrib_nbextensions umap-learn ncurses \
+    && pip install --no-cache-dir Cython MACS2==2.2.9.1 sphinxcontrib.exceltable session_info tqdm
 
 # MACS2-2.2.6
-RUN wget https://mirrors.huaweicloud.com/repository/pypi/packages/21/0f/972b44c84d85e37d816beae88aa5ddad606bd757630d77dc2f558900a6ce/MACS2-2.2.6.tar.gz \
-    && tar zxvf MACS2-2.2.6.tar.gz \
-    && cd MACS2-2.2.6 \
-    && /opt/conda/bin/python setup.py install \
-    && rm -rf /opt/MACS2-2.2.6 /opt/MACS2-2.2.6.tar.gz
+#RUN wget https://mirrors.huaweicloud.com/repository/pypi/packages/21/0f/972b44c84d85e37d816beae88aa5ddad606bd757630d77dc2f558900a6ce/MACS2-2.2.6.tar.gz \
+#    && tar zxvf MACS2-2.2.6.tar.gz \
+#    && cd MACS2-2.2.6 \
+#    && /opt/conda/bin/python setup.py install \
+#    && rm -rf /opt/MACS2-2.2.6 /opt/MACS2-2.2.6.tar.gz
 
 # bedtools
 ENV v 2.30.0
@@ -121,7 +123,7 @@ RUN R -e "IRkernel::installspec(user = FALSE)"
 COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
-FROM rnakato/ubuntu_22.04:2023.05 as normal
+FROM rnakato/ubuntu_22.04:2023.06 as normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
@@ -129,7 +131,7 @@ COPY --from=common / /
 USER ubuntu
 CMD ["/bin/bash"]
 
-FROM rnakato/ubuntu_gpu_22.04:2023.05 as gpu
+FROM rnakato/ubuntu_gpu_22.04:2023.06 as gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
