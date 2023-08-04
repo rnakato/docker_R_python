@@ -3,7 +3,7 @@
 - Ubuntu 22.04
 
 - Perl 5.36.0 (with plenv)
-- Python 3.8 (with Miniconda)
+- Python 3.9 (with Miniconda)
     - MACS2-2.2.9.1
 
 - R 4.x
