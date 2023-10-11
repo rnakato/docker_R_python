@@ -1,4 +1,4 @@
-for tag in 2023.08 latest
+for tag in 2023.10 latest
 do
     docker build -t rnakato/r_python:$tag --target normal .
     docker push     rnakato/r_python:$tag

@@ -23,6 +23,7 @@ RUN apt-get update \
     gnupg \
     htop \
     imagemagick \
+    libarchive-dev \
     libatlas-base-dev \
     libblas-dev \
     libboost-all-dev \
@@ -96,6 +97,7 @@ RUN conda update conda \
     notebook dash plotly black bokeh h5py click jupyter jupyterlab pytables setuptools \
     sphinx sphinx_rtd_theme fastcluster numba \
     && conda install -y -c conda-forge sphinx-autobuild nbsphinx python-igraph jupyterthemes jupyter_contrib_nbextensions umap-learn ncurses \
+    && pip install --upgrade tables \
     && pip install --no-cache-dir Cython MACS2==2.2.9.1 sphinxcontrib.exceltable session_info tqdm
 
 # MACS2-2.2.6
@@ -122,7 +124,7 @@ RUN R -e "IRkernel::installspec(user = FALSE)"
 COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
-FROM rnakato/ubuntu_22.04:2023.06 as normal
+FROM rnakato/ubuntu_22.04:2023.10 as normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
@@ -130,7 +132,7 @@ COPY --from=common / /
 USER ubuntu
 CMD ["/bin/bash"]
 
-FROM rnakato/ubuntu_gpu_22.04:2023.06 as gpu
+FROM rnakato/ubuntu_gpu_22.04:2023.10 as gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
