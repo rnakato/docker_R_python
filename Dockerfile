@@ -1,4 +1,4 @@
-FROM rnakato/ubuntu_22.04:2023.06 as common
+FROM rnakato/ubuntu_22.04:2023.10 as common
 LABEL maintainer "Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
@@ -66,6 +66,14 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# OpenBLAS
+COPY OpenBLAS-0.3.24.tar.gz OpenBLAS-0.3.24.tar.gz
+RUN tar zxvf OpenBLAS-0.3.24.tar.gz \
+    && cd OpenBLAS-0.3.24 \
+    && make \
+    && make install \
+    && rm -rf OpenBLAS-0.3.24 OpenBLAS-0.3.24.tar.gz
+
 # R packages
 COPY .Rprofile /root/
 #ENV JAVA_HOME /usr/lib/jvm/java-19-openjdk-amd64/
@@ -100,15 +108,8 @@ RUN conda update conda \
     && pip install --upgrade tables \
     && pip install --no-cache-dir Cython MACS2==2.2.9.1 sphinxcontrib.exceltable session_info tqdm
 
-# MACS2-2.2.6
-#RUN wget https://mirrors.huaweicloud.com/repository/pypi/packages/21/0f/972b44c84d85e37d816beae88aa5ddad606bd757630d77dc2f558900a6ce/MACS2-2.2.6.tar.gz \
-#    && tar zxvf MACS2-2.2.6.tar.gz \
-#    && cd MACS2-2.2.6 \
-#    && /opt/conda/bin/python setup.py install \
-#    && rm -rf /opt/MACS2-2.2.6 /opt/MACS2-2.2.6.tar.gz
-
 # bedtools
-ENV v 2.30.0
+ENV v 2.31.0
 COPY bedtools-$v.tar.gz bedtools-$v.tar.gz
 RUN tar zxvf bedtools-$v.tar.gz \
     && cd bedtools2 && make \
