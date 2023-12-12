@@ -22,8 +22,10 @@
 
 ## ChangeLog
 
+- 2023.11
+    - Removed LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/compat/:/usr/local/cuda/lib64
+
 - 2023.10
-    -
     - Add OpenBLAS-0.3.24
     - Update bedtools from v2.30.0 to v2.31.0
     - Add LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/compat/:/usr/local/cuda/lib64
