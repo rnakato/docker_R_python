@@ -72,7 +72,7 @@ RUN tar zxvf OpenBLAS-0.3.24.tar.gz \
     && cd OpenBLAS-0.3.24 \
     && make \
     && make install \
-    && rm -rf OpenBLAS-0.3.24 OpenBLAS-0.3.24.tar.gz
+    && rm -rf /opt/OpenBLAS-0.3.24 /opt/OpenBLAS-0.3.24.tar.gz /opt/OpenBLAS
 
 # R packages
 COPY .Rprofile /root/
@@ -104,9 +104,9 @@ RUN conda update conda \
     && conda install -y numpy scipy matplotlib pandas seaborn scikit-learn scikit-learn-intelex \
     notebook dash plotly black bokeh h5py click jupyter jupyterlab pytables setuptools \
     sphinx sphinx_rtd_theme fastcluster numba \
-    && conda install -y -c conda-forge sphinx-autobuild nbsphinx python-igraph jupyterthemes jupyter_contrib_nbextensions umap-learn ncurses \
+    && conda install -y -c conda-forge sphinx-autobuild nbsphinx python-igraph jupyterthemes umap-learn ncurses \
     && pip install --upgrade tables \
-    && pip install --no-cache-dir Cython MACS2==2.2.9.1 sphinxcontrib.exceltable session_info tqdm
+    && pip install --no-cache-dir Cython MACS2==2.2.9.1 sphinxcontrib.exceltable jupyter_contrib_nbextensions session_info tqdm
 
 # bedtools
 ENV v 2.31.0
@@ -125,7 +125,8 @@ RUN R -e "IRkernel::installspec(user = FALSE)"
 COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
-FROM rnakato/ubuntu_22.04:2023.10 as normal
+
+FROM rnakato/ubuntu_22.04:2023.11 as normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
@@ -133,7 +134,8 @@ COPY --from=common / /
 USER ubuntu
 CMD ["/bin/bash"]
 
-FROM rnakato/ubuntu_gpu_22.04:2023.10 as gpu
+
+FROM rnakato/ubuntu_gpu_22.04:2023.11 as gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
