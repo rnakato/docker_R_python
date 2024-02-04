@@ -28,6 +28,7 @@
 
 - 2024.02
   - Installed `sudo`
+  - Updated Miniconda from Python 3.9 to Python 3.10
 
 - 2024.01
   - Updated SAMtools from 1.17 to 1.19.2
