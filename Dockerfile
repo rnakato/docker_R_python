@@ -95,7 +95,8 @@ RUN curl -LO https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.03.
     && echo "rstudio:rstudio" | chpasswd
 
 # Python 3.9
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py39_23.5.2-0-Linux-x86_64.sh -O ~/miniconda.sh \
+#RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py39_23.5.2-0-Linux-x86_64.sh -O ~/miniconda.sh \
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py310_23.11.0-2-Linux-x86_64.sh -O ~/miniconda.sh \
     && bash ~/miniconda.sh -b -p /opt/conda \
     && rm ~/miniconda.sh \
     && ln -s -f /opt/conda/bin/python /usr/bin/python
@@ -125,13 +126,13 @@ RUN R -e "IRkernel::installspec(user = FALSE)"
 COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
-
 FROM rnakato/ubuntu_22.04:2024.01 as normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
 COPY --from=common / /
 USER ubuntu
+WORKDIR /home/ubuntu
 CMD ["/bin/bash"]
 
 
@@ -141,4 +142,5 @@ ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
 COPY --from=common / /
 USER ubuntu
+WORKDIR /home/ubuntu
 CMD ["/bin/bash"]

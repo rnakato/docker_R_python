@@ -26,9 +26,13 @@
 
 ## ChangeLog
 
+- 2024.02
+  - Installed `sudo`
+
 - 2024.01
   - Updated SAMtools from 1.17 to 1.19.2
   - Updated SRAtoolkit from 3.0.2 to 3.0.10
+  - Change WORKDIR from /opt to /home/ubuntu
 
 - 2023.11
     - Removed LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/compat/:/usr/local/cuda/lib64
@@ -61,5 +65,5 @@ The default user is `ubuntu`. Add `-u root` if you want to login as root:
     # normal
     docker build -t youracount/r_python --target normal .
     # with GPU
-    docker build -t youracount/r_python_gpu:$tag --target gpu .
+    docker build -t youracount/r_python_gpu --target gpu .
  
