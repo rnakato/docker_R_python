@@ -33,7 +33,9 @@ RUN apt-get update \
     libfreetype6-dev \
     libgdal-dev \
     libgit2-dev \
+    libglpk-dev \
     libglu1-mesa-dev \
+    libgmp-dev \
     libgsl-dev \
     libharfbuzz-dev \
     libfribidi-dev \
@@ -88,14 +90,13 @@ RUN R -e "install.packages(c('BiocManager'))" \
 RUN curl -LO https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.03.0-386-amd64.deb \
     && gdebi -n rstudio-2023.03.0-386-amd64.deb \
     && rm rstudio-2023.03.0-386-amd64.deb \
-    && wget https://download2.rstudio.org/server/jammy/amd64/rstudio-server-2023.03.0-386-amd64.deb \
+    && wget --quiet https://download2.rstudio.org/server/jammy/amd64/rstudio-server-2023.03.0-386-amd64.deb \
     && gdebi -n rstudio-server-2023.03.0-386-amd64.deb \
     && rm rstudio-server-2023.03.0-386-amd64.deb \
     && useradd -s /bin/bash -m rstudio \
     && echo "rstudio:rstudio" | chpasswd
 
 # Python 3.10
-#RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py39_23.5.2-0-Linux-x86_64.sh -O ~/miniconda.sh \
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py310_23.11.0-2-Linux-x86_64.sh -O ~/miniconda.sh \
     && bash ~/miniconda.sh -b -p /opt/conda \
     && rm ~/miniconda.sh \
@@ -103,11 +104,11 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py310_23.11.0-2-
 
 RUN conda update conda \
     && conda install -y numpy scipy matplotlib pandas seaborn scikit-learn scikit-learn-intelex \
-    notebook dash plotly black bokeh h5py click jupyter jupyterlab pytables setuptools \
+    dash plotly black bokeh h5py click jupyter jupyterlab pytables setuptools \
     sphinx sphinx_rtd_theme fastcluster numba \
     && conda install -y -c conda-forge sphinx-autobuild nbsphinx python-igraph jupyterthemes umap-learn ncurses \
     && pip install --upgrade tables \
-    && pip install --no-cache-dir Cython MACS2 sphinxcontrib.exceltable jupyter_contrib_nbextensions session_info tqdm
+    && pip install --no-cache-dir Cython MACS2 notebook==6.5.6 sphinxcontrib.exceltable jupyter_contrib_nbextensions session_info tqdm
 
 # bedtools
 ENV v 2.31.0
