@@ -1,4 +1,4 @@
-FROM rnakato/ubuntu_22.04:2024.01 as common
+FROM rnakato/ubuntu_22.04:2024.02 as common
 LABEL maintainer "Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
@@ -127,7 +127,7 @@ RUN R -e "IRkernel::installspec(user = FALSE)"
 COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
-FROM rnakato/ubuntu_22.04:2024.01 as normal
+FROM rnakato/ubuntu_22.04:2024.02 as normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 
@@ -137,7 +137,7 @@ WORKDIR /home/ubuntu
 CMD ["/bin/bash"]
 
 
-FROM rnakato/ubuntu_gpu_22.04:2024.01 as gpu
+FROM rnakato/ubuntu_gpu_22.04:2024.02 as gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin
 

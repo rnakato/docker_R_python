@@ -26,6 +26,9 @@
 
 ## ChangeLog
 
+- 2024.02.2
+  - Install MS core fonts (ttf-mscorefonts-installer)
+
 - 2024.02
   - Installed `sudo`
   - Updated Miniconda from Python 3.9 to Python 3.10

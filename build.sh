@@ -1,4 +1,4 @@
-for tag in 2024.02 latest
+for tag in 2024.02.2 latest
 do
     docker build -t rnakato/r_python:$tag --target normal .
 #    docker save -o r_python-$tag.tar rnakato/r_python:$tag
