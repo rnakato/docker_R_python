@@ -19,12 +19,17 @@
 - SRAtoolkit 3.0.10
 - BEDtools 2.31.0
 - OpenBLAS 0.3.24
+- ChIPseqTools
+- SSP
 
 - user:password
     - ubuntu:ubuntu
     - rstudio:rstudio
 
 ## ChangeLog
+
+- 2024.04
+  - Changed Python environment from conda to micromamba (`/opt/micromamba`)
 
 - 2024.02.2
   - Install MS core fonts (ttf-mscorefonts-installer)

@@ -1,6 +1,6 @@
-for tag in 2024.02.2 latest
+for tag in 2024.04 latest
 do
-    docker build -t rnakato/r_python:$tag --target normal .
+    docker build -t rnakato/r_python:$tag -f Dockerfile.micromamba --target normal .
 #    docker save -o r_python-$tag.tar rnakato/r_python:$tag
 #    singularity build -F r_python.$tag.sif docker-archive://r_python-$tag.tar
 #    exit
