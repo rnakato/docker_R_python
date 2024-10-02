@@ -1,5 +1,5 @@
-FROM rnakato/ubuntu_22.04:2024.10 as common
-LABEL maintainer "Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
+FROM rnakato/ubuntu_22.04:2024.10 AS common
+LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
 WORKDIR /opt
@@ -78,7 +78,7 @@ RUN tar zxvf OpenBLAS-0.3.24.tar.gz \
     && rm -rf /opt/OpenBLAS-0.3.24 /opt/OpenBLAS-0.3.24.tar.gz /opt/OpenBLAS
 
 # R packages
-ENV Ncpus 8
+ENV Ncpus=8
 COPY .Rprofile /root/
 #ENV JAVA_HOME /usr/lib/jvm/java-19-openjdk-amd64/
 RUN R -e "install.packages(c('BiocManager'))" \
@@ -98,13 +98,13 @@ RUN curl -LO https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.03.
     && useradd -s /bin/bash -m rstudio \
     && echo "rstudio:rstudio" | chpasswd
 
-ENV MAMBA_ROOT_PREFIX /opt/micromamba
+ENV MAMBA_ROOT_PREFIX=/opt/micromamba
 COPY micromamba /opt/micromamba
 RUN micromamba install -y -n base -f /opt/micromamba/env.yaml && \
     micromamba clean --all --yes
 
 # bedtools
-ENV v 2.31.0
+ENV v=2.31.0
 COPY bedtools-$v.tar.gz bedtools-$v.tar.gz
 RUN tar zxvf bedtools-$v.tar.gz \
     && cd bedtools2 && make \
@@ -124,7 +124,7 @@ COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
 
-FROM rnakato/ubuntu_22.04:2024.10 as normal
+FROM rnakato/ubuntu_22.04:2024.10 AS normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/
 
@@ -145,7 +145,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]
 
 
-FROM rnakato/ubuntu_gpu_22.04:2024.10 as gpu
+FROM rnakato/ubuntu_gpu_22.04:2024.10 AS gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/
 
