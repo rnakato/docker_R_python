@@ -1,10 +1,10 @@
-FROM rnakato/ubuntu_22.04:2024.10 as common
+FROM rnakato/ubuntu_22.04:2024.02 as common
 LABEL maintainer "Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
 WORKDIR /opt
 
-ENV PATH=$PATH:/opt/micromamba/bin/:/opt/scripts
+ENV PATH $PATH:/opt/conda/bin/:/opt/micromamba/bin/:/opt/scripts
 SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update \
@@ -98,10 +98,21 @@ RUN curl -LO https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.03.
     && useradd -s /bin/bash -m rstudio \
     && echo "rstudio:rstudio" | chpasswd
 
-ENV MAMBA_ROOT_PREFIX /opt/micromamba
+# Python 3.10
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-py310_23.11.0-2-Linux-x86_64.sh -O ~/miniconda.sh \
+    && bash ~/miniconda.sh -b -p /opt/conda \
+    && rm ~/miniconda.sh \
+    && ln -s -f /opt/conda/bin/python /usr/bin/python \
+    && conda install -c conda-forge mamba
+
 COPY micromamba /opt/micromamba
-RUN micromamba install -y -n base -f /opt/micromamba/env.yaml && \
-    micromamba clean --all --yes
+#COPY mamba /opt/mamba
+RUN mamba install -y -f /opt/micromamba/env.yaml
+#RUN mamba install -y pip numpy scipy matplotlib pandas seaborn scikit-learn scikit-learn-intelex \
+#    dash plotly black bokeh h5py click jupyter jupyterlab pytables setuptools
+#    sphinx sphinx_rtd_theme fastcluster numba sphinx-autobuild nbsphinx python-igraph jupyterthemes umap-learn ncurses \
+#    && pip install --upgrade tables \
+#    && pip install --no-cache-dir Cython MACS2 notebook==6.5.6 sphinxcontrib.exceltable jupyter_contrib_nbextensions session_info tqdm
 
 # bedtools
 ENV v 2.31.0
@@ -110,58 +121,30 @@ RUN tar zxvf bedtools-$v.tar.gz \
     && cd bedtools2 && make \
     && rm /opt/bedtools-$v.tar.gz
 
-RUN micromamba shell init -s bash -p /opt/micromamba
-ARG MAMBA_DOCKERFILE_ACTIVATE=1
-
 # Jupyter config
 COPY conf conf
-RUN micromamba run -n base jupyter notebook --generate-config \
+RUN jupyter notebook --generate-config \
     && cat ./conf >> ~/.jupyter/jupyter_notebook_config.py \
     && rm ./conf
-RUN micromamba run -n base R -e "IRkernel::installspec(user = FALSE)"
+RUN R -e "IRkernel::installspec(user = FALSE)"
 
 COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
-
-FROM rnakato/ubuntu_22.04:2024.10 as normal
+FROM rnakato/ubuntu_22.04:2024.02 as normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
-ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/
+ENV PATH $PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/
 
 COPY --from=common / /
-
-USER root
-RUN echo "#!/bin/bash\nset -e\neval \"\$(micromamba shell hook --shell bash)\"\nmicromamba activate base\nexec \"\$@\"" > /entrypoint.sh \
-    && chmod +x /entrypoint.sh \
-    && mkdir -p /.singularity.d \
-    && echo '#!/bin/sh\n. /entrypoint.sh\nexec "$@"' > /.singularity.d/runscript \
-    && chmod +x /.singularity.d/runscript
-
-ENV MAMBA_ROOT_PREFIX=/opt/micromamba
-
 USER ubuntu
 WORKDIR /home/ubuntu
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]
 
 
-FROM rnakato/ubuntu_gpu_22.04:2024.10 as gpu
+FROM rnakato/ubuntu_gpu_22.04:2024.02 as gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
-ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/
 
 COPY --from=common / /
-
-USER root
-
-RUN echo "#!/bin/bash\nset -e\neval \"\$(micromamba shell hook --shell bash)\"\nmicromamba activate base\nexec \"\$@\"" > /entrypoint.sh \
-    && chmod +x /entrypoint.sh \
-    && mkdir -p /.singularity.d \
-    && echo '#!/bin/sh\n. /entrypoint.sh\nexec "$@"' > /.singularity.d/runscript \
-    && chmod +x /.singularity.d/runscript
-
-ENV MAMBA_ROOT_PREFIX=/opt/micromamba
-
 USER ubuntu
 WORKDIR /home/ubuntu
-ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]

@@ -7,19 +7,20 @@
    - cudnn 8
 
 - Perl 5.36.0 (with plenv)
-- Python 3.9 (with Miniconda)
-    - MACS2-2.2.9.1
+- Python 3.10 (with micromamba)
+    - See [env.yaml](https://github.com/rnakato/docker_R_python/blob/master/micromamba/env.yaml) for details
 
 - R 4.x
     - BiocManager
     - Rstudio Desktop
     - Rstudio Server
 
-- SAMtools 1.19.2
-- SRAtoolkit 3.0.10
+- SAMtools 1.21
+- SRAtoolkit 3.1.1
 - BEDtools 2.31.0
 - OpenBLAS 0.3.24
 - ChIPseqTools
+- MACS2-2.2.9.1
 - SSP
 
 - user:password
@@ -27,6 +28,10 @@
     - rstudio:rstudio
 
 ## ChangeLog
+
+- 2024.10
+  - Updated SAMtools from 1.19.2 to 1.21
+  - Updated SRA Toolkit from 3.0.10 to v3.1.1
 
 - 2024.04
   - Changed Python environment from conda to micromamba (`/opt/micromamba`)
