@@ -17,6 +17,7 @@
 
 - SAMtools 1.21
 - SRAtoolkit 3.1.1
+- parallel-fastq-dump 0.6.7
 - BEDtools 2.31.0
 - OpenBLAS 0.3.24
 - ChIPseqTools
@@ -32,6 +33,7 @@
 - 2024.10
   - Updated SAMtools from 1.19.2 to 1.21
   - Updated SRA Toolkit from 3.0.10 to v3.1.1
+  - Added [parallel-fastq-dump](https://github.com/rvalieris/parallel-fastq-dump)
 
 - 2024.04
   - Changed Python environment from conda to micromamba (`/opt/micromamba`)
