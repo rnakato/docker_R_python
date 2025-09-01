@@ -30,6 +30,11 @@
 
 ## ChangeLog
 
+- 2025.08
+  - Updated SAMtools from 1.21 to 1.22.1
+  - Updated SRA Toolkit from 3.1.1 to 3.2.1
+  - Updated rstudio and rstudio-server to 2025.05.1-513
+
 - 2024.10
   - Updated SAMtools from 1.19.2 to 1.21
   - Updated SRA Toolkit from 3.0.10 to v3.1.1
@@ -82,4 +87,3 @@ The default user is `ubuntu`. Add `-u root` if you want to login as root:
     docker build -t youracount/r_python --target normal .
     # with GPU
     docker build -t youracount/r_python_gpu --target gpu .
- 

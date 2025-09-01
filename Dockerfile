@@ -1,4 +1,4 @@
-FROM rnakato/ubuntu_22.04:2024.10 AS common
+FROM rnakato/ubuntu_22.04:2025.08 AS common
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
@@ -82,21 +82,20 @@ ENV Ncpus=8
 COPY .Rprofile /root/
 #ENV JAVA_HOME /usr/lib/jvm/java-19-openjdk-amd64/
 RUN R -e "install.packages(c('BiocManager'))" \
-    && R -e "BiocManager::install(ask = FALSE)" \
+    && R -e "BiocManager::install(version = '3.21', ask = FALSE)" \
     && R CMD javareconf \
     && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'sf', 'tidyverse', 'xlsx', 'hdf5r', 'igraph', 'VennDiagram', 'usethis', 'graph', 'rJava'))" \
     && R -e "BiocManager::install(c('multtest','rhdf5'))" \
     && R -e "devtools::install_github('IRkernel/IRkernel')"
 
 # Install Rstudio Desktop and Server, and create user
-RUN curl -LO https://download1.rstudio.org/electron/jammy/amd64/rstudio-2023.03.0-386-amd64.deb \
-    && gdebi -n rstudio-2023.03.0-386-amd64.deb \
-    && rm rstudio-2023.03.0-386-amd64.deb \
-    && wget --quiet https://download2.rstudio.org/server/jammy/amd64/rstudio-server-2023.03.0-386-amd64.deb \
-    && gdebi -n rstudio-server-2023.03.0-386-amd64.deb \
-    && rm rstudio-server-2023.03.0-386-amd64.deb \
+RUN wget https://download2.rstudio.org/server/jammy/amd64/rstudio-server-2025.05.1-513-amd64.deb \
+    && gdebi -n rstudio-server-2025.05.1-513-amd64.deb \
+    && wget https://download1.rstudio.org/electron/jammy/amd64/rstudio-2025.05.1-513-amd64.deb \
+    && gdebi -n rstudio-2025.05.1-513-amd64.deb \
+    && rm rstudio-2025.05.1-513-amd64.deb rstudio-server-2025.05.1-513-amd64.deb \
     && useradd -s /bin/bash -m rstudio \
-    && echo "rstudio:rstudio" | chpasswd
+    && echo "rstudio:rstudio" | chpasswd 
 
 ENV MAMBA_ROOT_PREFIX=/opt/micromamba
 COPY micromamba /opt/micromamba
@@ -124,7 +123,7 @@ COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
 
-FROM rnakato/ubuntu_22.04:2024.10 AS normal
+FROM rnakato/ubuntu_22.04:2025.08 AS normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/
 
@@ -145,7 +144,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]
 
 
-FROM rnakato/ubuntu_gpu_22.04:2024.10 AS gpu
+FROM rnakato/ubuntu_gpu_22.04:2025.08 AS gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/
 
