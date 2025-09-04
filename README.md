@@ -83,7 +83,9 @@ The default user is `ubuntu`. Add `-u root` if you want to login as root:
 
 ## Build images from Dockerfile
 
-    # normal
+    # First, add execute permissions to the micromamba binary file and the scripts.
+    chmod +x micromamba/bin/micromamba scripts/*
+    # Build the image without GPU support
     docker build -t youracount/r_python --target normal .
-    # with GPU
+    # Build the image with GPU support (CUDA)
     docker build -t youracount/r_python_gpu --target gpu .
