@@ -1,0 +1,71 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 5.23kB 0.0s done
+#1 DONE 0.2s
+
+#2 [internal] load metadata for docker.io/rnakato/ubuntu_22.04:2025.08
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context:
+#3 transferring context: 2B done
+#3 DONE 0.2s
+
+#4 [common  1/18] FROM docker.io/rnakato/ubuntu_22.04:2025.08
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 60.01MB 0.5s done
+#5 DONE 0.7s
+
+#6 [common  2/18] WORKDIR /opt
+#6 CACHED
+
+#7 [common 13/18] RUN micromamba shell init -s bash -p /opt/micromamba
+#7 CACHED
+
+#8 [common  4/18] COPY OpenBLAS-0.3.24.tar.gz OpenBLAS-0.3.24.tar.gz
+#8 CACHED
+
+#9 [common  7/18] RUN R -e "install.packages(c('BiocManager'))"     && R -e "BiocManager::install(version = '3.21', ask = FALSE)"     && R CMD javareconf     && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'sf', 'tidyverse', 'xlsx', 'hdf5r', 'igraph', 'VennDiagram', 'usethis', 'graph', 'rJava'))"     && R -e "BiocManager::install(c('multtest','rhdf5'))"     && R -e "devtools::install_github('IRkernel/IRkernel')"
+#9 CACHED
+
+#10 [common 15/18] RUN micromamba run -n base jupyter notebook --generate-config     && cat ./conf >> ~/.jupyter/jupyter_notebook_config.py     && rm ./conf
+#10 CACHED
+
+#11 [common 14/18] COPY conf conf
+#11 CACHED
+
+#12 [common  5/18] RUN tar zxvf OpenBLAS-0.3.24.tar.gz     && cd OpenBLAS-0.3.24     && make     && make install     && rm -rf /opt/OpenBLAS-0.3.24 /opt/OpenBLAS-0.3.24.tar.gz /opt/OpenBLAS
+#12 CACHED
+
+#13 [common 12/18] RUN tar zxvf bedtools-2.31.0.tar.gz     && cd bedtools2 && make     && rm /opt/bedtools-2.31.0.tar.gz
+#13 CACHED
+
+#14 [common  3/18] RUN apt-get update     && apt-get install -y --no-install-recommends     apt-file     apt-utils     build-essential     bzip2     ca-certificates     cmake     curl     default-jre     gawk     gdebi-core     gfortran     git     gnupg     htop     imagemagick     libarchive-dev     libatlas-base-dev     libblas-dev     libboost-all-dev     libbz2-dev     libcairo2-dev     libcurl4-gnutls-dev     libfreetype6-dev     libgdal-dev     libgit2-dev     libglpk-dev     libglu1-mesa-dev     libgmp-dev     libgsl-dev     libharfbuzz-dev     libfribidi-dev     libhdf5-dev     libhdf5-serial-dev     liblapack3     liblapack-dev     libmagick++-dev     libssl-dev     libtool     libudunits2-dev     libv8-dev     libx11-dev     make     pigz     psmisc     qtbase5-dev qt5-qmake qtbase5-dev-tools qtchooser     sudo     unzip     vim     xorg     zlib1g-dev     && echo "deb https://cloud.r-project.org/bin/linux/ubuntu jammy-cran40/" | tee -a /etc/apt/sources.list     && curl -sL "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x51716619E084DAB9" | apt-key add     && apt-get update     && apt-get install -y --no-install-recommends     r-base r-base-core r-recommended r-base-dev libclang-dev libxkbcommon-x11-0     && apt-get upgrade -y     && apt-get autoremove -y     && apt-get clean     && rm -rf /var/lib/apt/lists/*
+#14 CACHED
+
+#15 [common 10/18] RUN micromamba install -y -n base -f /opt/micromamba/env.yaml &&     micromamba clean --all --yes
+#15 CACHED
+
+#16 [common  6/18] COPY .Rprofile /root/
+#16 CACHED
+
+#17 [common  9/18] COPY micromamba /opt/micromamba
+#17 CACHED
+
+#18 [common  8/18] RUN wget https://download2.rstudio.org/server/jammy/amd64/rstudio-server-2025.05.1-513-amd64.deb     && gdebi -n rstudio-server-2025.05.1-513-amd64.deb     && wget https://download1.rstudio.org/electron/jammy/amd64/rstudio-2025.05.1-513-amd64.deb     && gdebi -n rstudio-2025.05.1-513-amd64.deb     && rm rstudio-2025.05.1-513-amd64.deb rstudio-server-2025.05.1-513-amd64.deb     && useradd -s /bin/bash -m rstudio     && echo "rstudio:rstudio" | chpasswd
+#18 CACHED
+
+#19 [common 11/18] COPY bedtools-2.31.0.tar.gz bedtools-2.31.0.tar.gz
+#19 CACHED
+
+#20 [common 16/18] RUN micromamba run -n base R -e "IRkernel::installspec(user = FALSE)"
+#20 CACHED
+
+#21 [common 17/18] COPY scripts scripts
+#21 DONE 2.0s
+
+#22 [common 18/18] RUN chmod +x /opt/scripts/*sh
+#22 DONE 4.1s

@@ -34,6 +34,7 @@
   - Updated SAMtools from 1.21 to 1.22.1
   - Updated SRA Toolkit from 3.1.1 to 3.2.1
   - Updated rstudio and rstudio-server to 2025.05.1-513
+  - Added the ``--server-daemonize=0`` option to ``rserver.sh``
 
 - 2024.10
   - Updated SAMtools from 1.19.2 to 1.21

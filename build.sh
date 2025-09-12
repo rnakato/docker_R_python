@@ -1,6 +1,7 @@
 for tag in 2025.08 latest
 do
     docker build -t rnakato/r_python:$tag -f Dockerfile --target normal .
+
 #    docker save -o r_python-$tag.tar rnakato/r_python:$tag
 #    singularity build -F r_python.$tag.sif docker-archive://r_python-$tag.tar
 #    exit
