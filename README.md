@@ -30,6 +30,10 @@
 
 ## ChangeLog
 
+- 2026.03
+  - Added [pfastq-dump](https://github.com/inutano/pfastq-dump) (a bash implementation of parallel-fastq-dump)  and removed parallel-fastq-dump
+  - Bug fix: lost path to sratoolkit 3.2.1 in PATH
+
 - 2025.08
   - Updated SAMtools from 1.21 to 1.22.1
   - Updated SRA Toolkit from 3.1.1 to 3.2.1

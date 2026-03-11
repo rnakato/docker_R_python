@@ -1,4 +1,4 @@
-FROM rnakato/ubuntu_22.04:2025.08 AS common
+FROM rnakato/ubuntu_22.04:2026.03 AS common
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
@@ -80,7 +80,7 @@ RUN tar zxvf OpenBLAS-0.3.24.tar.gz \
 # R packages
 ENV Ncpus=8
 COPY .Rprofile /root/
-#ENV JAVA_HOME /usr/lib/jvm/java-19-openjdk-amd64/
+#ENV JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64/
 RUN R -e "install.packages(c('BiocManager'))" \
     && R -e "BiocManager::install(version = '3.21', ask = FALSE)" \
     && R CMD javareconf \
@@ -101,6 +101,10 @@ ENV MAMBA_ROOT_PREFIX=/opt/micromamba
 COPY micromamba /opt/micromamba
 RUN micromamba install -y -n base -f /opt/micromamba/env.yaml && \
     micromamba clean --all --yes
+
+# pfastq-dump (a bash implementation of parallel-fastq-dump)
+RUN git clone http://github.com/inutano/pfastq-dump \
+    && chmod a+x pfastq-dump/bin/pfastq-dump
 
 # bedtools
 ENV v=2.31.0
@@ -123,9 +127,9 @@ COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
 
-FROM rnakato/ubuntu_22.04:2025.08 AS normal
+FROM rnakato/ubuntu_22.04:2026.03 AS normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
-ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/
+ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/:/opt/pfastq-dump/bin
 
 COPY --from=common / /
 
@@ -144,9 +148,9 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]
 
 
-FROM rnakato/ubuntu_gpu_22.04:2025.08 AS gpu
+FROM rnakato/ubuntu_gpu_22.04:2026.03 AS gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
-ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/
+ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/:/opt/pfastq-dump/bin
 
 COPY --from=common / /
 
