@@ -1,7 +1,7 @@
-for tag in 2026.03 #latest
+for tag in 2026.03.2 latest
 do
     docker build -t rnakato/r_python:$tag -f Dockerfile --target normal .
-exit
+#exit
 #    docker save -o r_python-$tag.tar rnakato/r_python:$tag
 #    singularity build -F r_python.$tag.sif docker-archive://r_python-$tag.tar
 #    exit

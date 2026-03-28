@@ -30,6 +30,9 @@
 
 ## ChangeLog
 
+- 2026.03.2
+  - Updated Bioconductor 3.21 to 3.22
+
 - 2026.03
   - Added [pfastq-dump](https://github.com/inutano/pfastq-dump) (a bash implementation of parallel-fastq-dump)  and removed parallel-fastq-dump
   - Bug fix: lost path to sratoolkit 3.2.1 in PATH

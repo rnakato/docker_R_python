@@ -82,11 +82,11 @@ ENV Ncpus=8
 COPY .Rprofile /root/
 #ENV JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64/
 RUN R -e "install.packages(c('BiocManager'))" \
-    && R -e "BiocManager::install(version = '3.21', ask = FALSE)" \
+    && R -e "BiocManager::install(version = '3.22', ask = FALSE)" \
     && R CMD javareconf \
-    && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'uuid', 'digest','Rcpp' ,'sf', 'tidyverse', 'xlsx', 'hdf5r', 'igraph', 'VennDiagram', 'usethis', 'graph', 'rJava'))" \
+    && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'remotes', 'uuid', 'digest','Rcpp' ,'sf', 'tidyverse', 'xlsx', 'hdf5r', 'igraph', 'VennDiagram', 'usethis', 'graph', 'rJava'))" \
     && R -e "BiocManager::install(c('multtest','rhdf5'))" \
-    && R -e "devtools::install_github('IRkernel/IRkernel')"
+    && R -e "remotes::install_github('IRkernel/IRkernel')"
 
 # Install Rstudio Desktop and Server, and create user
 RUN wget https://download2.rstudio.org/server/jammy/amd64/rstudio-server-2025.05.1-513-amd64.deb \
@@ -95,7 +95,7 @@ RUN wget https://download2.rstudio.org/server/jammy/amd64/rstudio-server-2025.05
     && gdebi -n rstudio-2025.05.1-513-amd64.deb \
     && rm rstudio-2025.05.1-513-amd64.deb rstudio-server-2025.05.1-513-amd64.deb \
     && useradd -s /bin/bash -m rstudio \
-    && echo "rstudio:rstudio" | chpasswd 
+    && echo "rstudio:rstudio" | chpasswd
 
 ENV MAMBA_ROOT_PREFIX=/opt/micromamba
 COPY micromamba /opt/micromamba
