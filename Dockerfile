@@ -1,4 +1,4 @@
-FROM rnakato/ubuntu_22.04:2026.03 AS common
+FROM rnakato/ubuntu_22.04:2026.06 AS common
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 
 USER root
@@ -82,7 +82,7 @@ ENV Ncpus=8
 COPY .Rprofile /root/
 #ENV JAVA_HOME /usr/lib/jvm/java-21-openjdk-amd64/
 RUN R -e "install.packages(c('BiocManager'))" \
-    && R -e "BiocManager::install(version = '3.22', ask = FALSE)" \
+    && R -e "BiocManager::install(version = '3.23', ask = FALSE)" \
     && R CMD javareconf \
     && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'remotes', 'uuid', 'digest','Rcpp' ,'sf', 'tidyverse', 'xlsx', 'hdf5r', 'igraph', 'VennDiagram', 'usethis', 'graph', 'rJava'))" \
     && R -e "BiocManager::install(c('multtest','rhdf5'))" \
@@ -127,7 +127,7 @@ COPY scripts scripts
 RUN chmod +x /opt/scripts/*sh
 
 
-FROM rnakato/ubuntu_22.04:2026.03 AS normal
+FROM rnakato/ubuntu_22.04:2026.06 AS normal
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/:/opt/pfastq-dump/bin
 
@@ -148,7 +148,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/bin/bash"]
 
 
-FROM rnakato/ubuntu_gpu_22.04:2026.03 AS gpu
+FROM rnakato/ubuntu_gpu_22.04:2026.06 AS gpu
 LABEL maintainer="Ryuichiro Nakato <rnakato@iqb.u-tokyo.ac.jp>"
 ENV PATH=$PATH:/opt/conda/bin/:/opt/scripts:/opt/bedtools2/bin:/opt/micromamba/bin/:/opt/pfastq-dump/bin
 

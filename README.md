@@ -15,8 +15,8 @@
     - Rstudio Desktop
     - Rstudio Server
 
-- SAMtools 1.21
-- SRAtoolkit 3.1.1
+- SAMtools 1.22.1
+- SRAtoolkit 3.4.1
 - parallel-fastq-dump 0.6.7
 - BEDtools 2.31.0
 - OpenBLAS 0.3.24
@@ -30,6 +30,14 @@
 
 ## ChangeLog
 
+- 2026.06
+  - Added ``isnumber.sh``
+  - Updated Bioconductor 3.21 to 3.23
+
+- 2026.04
+  - Updated SRA Toolkit from 3.2.1 to v3.4.1
+  - Updated SAMtools from 1.22.1 to 1.22.2
+  
 - 2026.03.2
   - Updated Bioconductor 3.21 to 3.22
 
