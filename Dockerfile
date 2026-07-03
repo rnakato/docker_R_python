@@ -75,7 +75,7 @@ RUN tar zxvf OpenBLAS-0.3.24.tar.gz \
     && cd OpenBLAS-0.3.24 \
     && make \
     && make install \
-    && rm -rf /opt/OpenBLAS-0.3.24 /opt/OpenBLAS-0.3.24.tar.gz /opt/OpenBLAS
+    && rm -rf /opt/OpenBLAS-0.3.24 /opt/OpenBLAS-0.3.24.tar.gz
 
 # R packages
 ENV Ncpus=8
