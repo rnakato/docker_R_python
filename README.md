@@ -1,24 +1,24 @@
 # docker_R_python
 
-- Ubuntu 22.04
+- Ubuntu 24.04 / 22.04
 
-- GPU mode (cuda:11.8.0-cudnn8-runtime)
-   - CUDA 11.8
-   - cudnn 8
+- GPU mode
+   - 24.04: cuda:12.9.2-cudnn-runtime (CUDA 12.9, cuDNN 9.10)
+   - 22.04: cuda:11.8.0-cudnn8-runtime (CUDA 11.8, cuDNN 8)
 
-- Perl 5.36.0 (with plenv)
+- Perl 5.42.3 (with plenv)
 - Python 3.10 (with micromamba)
     - See [env.yaml](https://github.com/rnakato/docker_R_python/blob/master/micromamba/env.yaml) for details
 
-- R 4.x
-    - BiocManager
+- R 4.6.1
+    - BiocManager (Bioconductor 3.23)
     - Rstudio Desktop
     - Rstudio Server
 
-- SAMtools 1.22.1
+- SAMtools 1.24
 - SRAtoolkit 3.4.1
-- parallel-fastq-dump 0.6.7
-- BEDtools 2.31.0
+- [pfastq-dump](https://github.com/inutano/pfastq-dump)
+- BEDtools 2.31.1
 - OpenBLAS 0.3.24
 - ChIPseqTools
 - MACS2-2.2.9.1
@@ -29,6 +29,25 @@
     - rstudio:rstudio
 
 ## ChangeLog
+
+- 2026.09
+  - Added Ubuntu 24.04
+  - Image names are now versioned by Ubuntu release: `r_python` and `r_python_gpu`
+    are renamed to `r_python_22.04` and `r_python_gpu_22.04`, and `r_python_24.04`
+    and `r_python_gpu_24.04` are added
+    - The CRAN repository is `noble-cran40` for 24.04 and `jammy-cran40` for 22.04
+    - The single `Dockerfile` is split into `Dockerfile.22.04` and `Dockerfile.24.04`
+  - Updated rstudio and rstudio-server from 2025.05.1-513 to 2026.08.2-200
+    (one build covers Ubuntu 22/24)
+  - Updated Perl from 5.36.0 to 5.42.3 (base image)
+  - Updated SAMtools from 1.22.1 to 1.24 (base image)
+  - Updated BEDtools from 2.31.0 to 2.31.1 (2.31.0 fails to compile with GCC 13 on 24.04)
+  - Fixed the R package `graph`, which had never been installed because it was
+    listed in `install.packages()` although it is a Bioconductor package;
+    it is now installed via `BiocManager::install()`
+  - `nvidia-cuda-toolkit` is no longer installed in GPU mode (base image);
+    `nvcc` is not included, so use a `-devel` CUDA base image if you need to
+    compile CUDA code
 
 - 2026.06
   - Added ``isnumber.sh``
@@ -85,23 +104,30 @@
 
 ## Usage
 
-Run normal image:
+Run normal image (Ubuntu 24.04):
 
-    docker run -it --rm rnakato/r_python /bin/bash
+    docker run -it --rm rnakato/r_python_24.04 /bin/bash
 
 Run with GPU:
 
-    docker run -it --rm --gpus all rnakato/r_python_gpu /bin/bash
+    docker run -it --rm --gpus all rnakato/r_python_gpu_24.04 /bin/bash
+
+Ubuntu 22.04 images are also available:
+
+    docker run -it --rm rnakato/r_python_22.04 /bin/bash
+    docker run -it --rm --gpus all rnakato/r_python_gpu_22.04 /bin/bash
 
 The default user is `ubuntu`. Add `-u root` if you want to login as root:
 
-    docker run -it --rm --gpus all -u root rnakato/r_python_gpu /bin/bash
+    docker run -it --rm --gpus all -u root rnakato/r_python_gpu_24.04 /bin/bash
 
 ## Build images from Dockerfile
+
+    version=24.04 # or 22.04
 
     # First, add execute permissions to the micromamba binary file and the scripts.
     chmod +x micromamba/bin/micromamba scripts/*
     # Build the image without GPU support
-    docker build -t youracount/r_python --target normal .
+    docker build -f Dockerfile.$version -t youracount/r_python_$version --target normal .
     # Build the image with GPU support (CUDA)
-    docker build -t youracount/r_python_gpu --target gpu .
+    docker build -f Dockerfile.$version -t youracount/r_python_gpu_$version --target gpu .
