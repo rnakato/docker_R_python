@@ -45,6 +45,9 @@
   - Fixed the R package `graph`, which had never been installed because it was
     listed in `install.packages()` although it is a Bioconductor package;
     it is now installed via `BiocManager::install()`
+  - Added a verification step after the R package installation that aborts the
+    build if any package is missing (`install.packages()` only warns on failure,
+    so a transient download error used to produce a silently incomplete image)
   - `nvidia-cuda-toolkit` is no longer installed in GPU mode (base image);
     `nvcc` is not included, so use a `-devel` CUDA base image if you need to
     compile CUDA code

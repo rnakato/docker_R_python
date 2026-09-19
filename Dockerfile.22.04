@@ -86,7 +86,8 @@ RUN R -e "install.packages(c('BiocManager'))" \
     && R CMD javareconf \
     && R -e "install.packages(c('repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'remotes', 'uuid', 'digest','Rcpp' ,'sf', 'tidyverse', 'xlsx', 'hdf5r', 'igraph', 'VennDiagram', 'usethis', 'rJava'))" \
     && R -e "BiocManager::install(c('multtest','rhdf5','graph'))" \
-    && R -e "remotes::install_github('IRkernel/IRkernel')"
+    && R -e "remotes::install_github('IRkernel/IRkernel')" \
+    && R -e "pkgs <- c('BiocManager', 'repr', 'IRdisplay', 'evaluate', 'crayon', 'pbdZMQ', 'devtools', 'remotes', 'uuid', 'digest', 'Rcpp', 'sf', 'tidyverse', 'xlsx', 'hdf5r', 'igraph', 'VennDiagram', 'usethis', 'rJava', 'multtest', 'rhdf5', 'graph', 'IRkernel'); miss <- pkgs[!sapply(pkgs, requireNamespace, quietly = TRUE)]; if (length(miss)) stop('failed to install: ', paste(miss, collapse = ', '))"
 
 # Install Rstudio Desktop and Server, and create user
 RUN wget https://download2.rstudio.org/server/jammy/amd64/rstudio-server-2026.08.2-200-amd64.deb \
