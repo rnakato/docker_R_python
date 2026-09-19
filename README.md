@@ -21,7 +21,7 @@
 - BEDtools 2.31.1
 - OpenBLAS 0.3.24
 - ChIPseqTools
-- MACS2-2.2.9.1
+- MACS3 v3.0.4
 - SSP
 
 - user:password
@@ -31,7 +31,7 @@
 ## ChangeLog
 
 - 2026.09
-  - Added Ubuntu 24.04
+  - Added Ubuntu 24.04. 
   - Image names are now versioned by Ubuntu release: `r_python` and `r_python_gpu`
     are renamed to `r_python_22.04` and `r_python_gpu_22.04`, and `r_python_24.04`
     and `r_python_gpu_24.04` are added
@@ -42,6 +42,7 @@
   - Updated Perl from 5.36.0 to 5.42.3 (base image)
   - Updated SAMtools from 1.22.1 to 1.24 (base image)
   - Updated BEDtools from 2.31.0 to 2.31.1 (2.31.0 fails to compile with GCC 13 on 24.04)
+  - Updated MACS2 v2.2.9.1 to MACS3 v3.0.4
   - Fixed the R package `graph`, which had never been installed because it was
     listed in `install.packages()` although it is a Bioconductor package;
     it is now installed via `BiocManager::install()`
